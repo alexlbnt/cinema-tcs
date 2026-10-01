@@ -10,10 +10,17 @@ import { IngressoModule } from './ingresso/ingresso.module';
 import { PedidoModule } from './pedido/pedido.module';
 import { SnackModule } from './snack/snack.module';
 import { AuthModule } from './auth/auth.module';
+import { UsersModule } from './users/users.module';
 import { JwtAuthGuard } from './auth/jwt-auth.guard';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 @Module({
   imports: [
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'public'),
+      exclude: ['/api/(.*)'],
+    }),
     PrismaModule,
     FilmeModule,
     SalaModule,
@@ -22,6 +29,7 @@ import { JwtAuthGuard } from './auth/jwt-auth.guard';
     PedidoModule,
     SnackModule,
     AuthModule,
+    UsersModule,
   ],
   controllers: [AppController],
   providers: [

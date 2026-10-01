@@ -21,6 +21,7 @@ async function bootstrap() {
     .setTitle('Cinema API')
     .setDescription('API do sistema de cinema com autenticação JWT')
     .setVersion('2.0')
+    .addTag('users')
     .addBearerAuth()
     .build();
   const document = SwaggerModule.createDocument(app, config);

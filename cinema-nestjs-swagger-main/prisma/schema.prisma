@@ -7,6 +7,15 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  name      String?
+  password  String
+  createdAt DateTime @default(now())
+  updateAt  DateTime @updatedAt
+}
+
 model Filme {
   id                  Int      @id @default(autoincrement())
   titulo              String
@@ -67,11 +76,12 @@ model Pedido {
 
 
 model Usuario {
-  id        Int        @id @default(autoincrement())
-  nome      String
-  email     String     @unique
-  senha     String
-  criadoEm DateTime   @default(now())
-  ingressos Ingresso[]
-  pedidos   Pedido[]   // ← adiciona isso
+  id           Int        @id @default(autoincrement())
+  nome         String
+  email        String     @unique
+  senha        String
+  criadoEm     DateTime   @default(now())
+  atualizadoEm DateTime   @default(now()) @updatedAt
+  ingressos    Ingresso[]
+  pedidos      Pedido[]
 }

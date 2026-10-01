@@ -99,6 +99,16 @@ async function main() {
     },
   });
 
+  await prisma.user.upsert({
+    where: { email: 'admin@cinema.com' },
+    update: {},
+    create: {
+      name: 'Admin Cinema',
+      email: 'admin@cinema.com',
+      password: hash,
+    },
+  });
+
   console.log('✅ Usuário de teste criado: admin@cinema.com / senha123');
   console.log('🎬 Seed concluído com sucesso!');
 }
