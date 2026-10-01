@@ -5,8 +5,7 @@ node_modules/
 # Build outputs
 dist/
 build/
-.expo/
-**/.expo/
+coverage/
 
 # Environment variables (NUNCA subir .env!)
 .env
@@ -36,19 +35,3 @@ prisma_error.txt
 # OS
 .DS_Store
 Thumbs.db
-
-# Expo
-.expo/
-dist/
-web-build/
-
-# Native
-*.orig.*
-*.jks
-*.p8
-*.p12
-*.key
-*.mobileprovision
-
-# Misc
-.metro-health-check*

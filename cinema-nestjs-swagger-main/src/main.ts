@@ -6,7 +6,7 @@ import { ValidationPipe } from '@nestjs/common';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  // CORS para o app mobile conseguir conectar
+  // CORS habilitado para requisições do frontend web
   app.enableCors({
     origin: '*',
     methods: ['GET', 'POST', 'PATCH', 'DELETE'],
@@ -26,7 +26,6 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
 
-  // 0.0.0.0 para aceitar conexões do celular na mesma rede
   await app.listen(3000, '0.0.0.0');
   console.log('🎬 Cinema API rodando em http://0.0.0.0:3000');
   console.log('📚 Swagger em http://localhost:3000/api');
