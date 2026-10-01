@@ -1,0 +1,54 @@
+# Dependências
+node_modules/
+**/node_modules/
+
+# Build outputs
+dist/
+build/
+.expo/
+**/.expo/
+
+# Environment variables (NUNCA subir .env!)
+.env
+**/.env
+.env.local
+.env.*.local
+
+# Banco de dados
+*.db
+*.db-journal
+prisma/dev.db
+prisma/prisma/
+
+# Logs
+*.log
+npm-debug.log*
+prisma.log
+errors.txt
+out.txt
+prisma_error.txt
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Expo
+.expo/
+dist/
+web-build/
+
+# Native
+*.orig.*
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+
+# Misc
+.metro-health-check*

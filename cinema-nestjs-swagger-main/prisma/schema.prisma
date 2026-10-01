@@ -1,0 +1,77 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Filme {
+  id                  Int      @id @default(autoincrement())
+  titulo              String
+  genero              String // Gênero não é mais um ID de outra tabela (ex: "Ação", "Terror")
+  duracao             Int // Duração em minutos
+  classificacaoEtaria Int
+  sessoes             Sessao[]
+}
+
+model Sala {
+  id         Int      @id @default(autoincrement())
+  numero     Int      @unique
+  capacidade Int
+  sessoes    Sessao[]
+}
+
+model Sessao {
+  id            Int        @id @default(autoincrement())
+  filmeId       Int
+  filme         Filme      @relation(fields: [filmeId], references: [id], onDelete: Cascade)
+  salaId        Int
+  sala          Sala       @relation(fields: [salaId], references: [id], onDelete: Cascade)
+  dataHorario   DateTime
+  valorIngresso Float
+  ingressos     Ingresso[]
+}
+
+model Ingresso {
+  id        Int     @id @default(autoincrement())
+  sessaoId  Int
+  sessao    Sessao  @relation(fields: [sessaoId], references: [id], onDelete: Cascade)
+  pedidoId  Int?
+  pedido    Pedido? @relation(fields: [pedidoId], references: [id], onDelete: SetNull)
+  usuarioId Int?
+  usuario   Usuario? @relation(fields: [usuarioId], references: [id], onDelete: SetNull)
+  tipo      String
+  valorPago Float
+  assento   String  @default("")
+}
+
+
+model Snack {
+  id      Int      @id @default(autoincrement())
+  nome    String
+  preco   Float
+  pedidos Pedido[] // Relação N:N (um snack pode estar em vários pedidos)
+}
+
+model Pedido {
+  id         Int        @id @default(autoincrement())
+  ingressos  Ingresso[]
+  snacks     Snack[]
+  valorTotal Float      @default(0)
+  dataHora   DateTime   @default(now())
+  usuarioId  Int?
+  usuario    Usuario?   @relation(fields: [usuarioId], references: [id], onDelete: SetNull)
+}
+
+
+model Usuario {
+  id        Int        @id @default(autoincrement())
+  nome      String
+  email     String     @unique
+  senha     String
+  criadoEm DateTime   @default(now())
+  ingressos Ingresso[]
+  pedidos   Pedido[]   // ← adiciona isso
+}
