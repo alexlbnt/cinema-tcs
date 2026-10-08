@@ -27,8 +27,9 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
 
-  await app.listen(3000, '0.0.0.0');
-  console.log('🎬 Cinema API rodando em http://0.0.0.0:3000');
-  console.log('📚 Swagger em http://localhost:3000/api');
+  const port = Number(process.env.PORT) || 3000;
+  await app.listen(port, '0.0.0.0');
+  console.log(`🎬 Cinema API rodando em http://0.0.0.0:${port}`);
+  console.log(`📚 Swagger em http://localhost:${port}/api`);
 }
 bootstrap();

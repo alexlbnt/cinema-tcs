@@ -31,8 +31,8 @@ async function main() {
 
   const filmesCreated = [];
   for (const filme of filmes) {
-    const f = await prisma.filme.create({ data: filme });
-    filmesCreated.push(f);
+    const existente = await prisma.filme.findFirst({ where: { titulo: filme.titulo } });
+    filmesCreated.push(existente ?? (await prisma.filme.create({ data: filme })));
   }
 
   console.log('✅ Filmes criados');
@@ -42,7 +42,7 @@ async function main() {
   const amanha = new Date(hoje);
   amanha.setDate(amanha.getDate() + 1);
 
-  await prisma.sessao.createMany({
+  if ((await prisma.sessao.count()) === 0) await prisma.sessao.createMany({
     data: [
       {
         filmeId: filmesCreated[0].id,
@@ -74,7 +74,7 @@ async function main() {
   console.log('✅ Sessões criadas');
 
   // ── Snacks ─────────────────────────────────────────────────────────────────
-  await prisma.snack.createMany({
+  if ((await prisma.snack.count()) === 0) await prisma.snack.createMany({
     data: [
       { nome: 'Pipoca Média', preco: 12.0 },
       { nome: 'Pipoca Grande', preco: 16.0 },
