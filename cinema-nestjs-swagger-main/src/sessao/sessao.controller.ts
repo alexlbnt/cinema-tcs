@@ -1,11 +1,13 @@
-import { Controller, Get, Post, Patch, Delete, Body, Param } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Delete, Body, Param, ParseIntPipe } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { SessaoService } from './sessao.service';
 import { CreateSessaoDto } from './dto/create-sessao.dto';
 import { UpdateSessaoDto } from './dto/update-sessao.dto';
 import { Public } from '../auth/public.decorator';
+import { Roles, ADMIN } from '../auth/roles.decorator';
 
 @ApiTags('Sessões')
+@Roles(ADMIN)
 @Controller('sessao')
 export class SessaoController {
   constructor(private readonly sessaoService: SessaoService) {}
@@ -33,8 +35,8 @@ export class SessaoController {
   @ApiOperation({ summary: 'Busca uma sessão por ID' })
   @ApiResponse({ status: 200, description: 'Sessão encontrada com sucesso.' })
   @ApiResponse({ status: 404, description: 'Sessão não encontrada.' })
-  findOne(@Param('id') id: string) {
-    return this.sessaoService.findOne(+id);
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.sessaoService.findOne(id);
   }
 
   @Patch(':id')
@@ -43,8 +45,8 @@ export class SessaoController {
   @ApiResponse({ status: 200, description: 'Sessão atualizada com sucesso.' })
   @ApiResponse({ status: 400, description: 'Dados inválidos.' })
   @ApiResponse({ status: 404, description: 'Sessão não encontrada.' })
-  update(@Param('id') id: string, @Body() updateSessaoDto: UpdateSessaoDto) {
-    return this.sessaoService.update(+id, updateSessaoDto);
+  update(@Param('id', ParseIntPipe) id: number, @Body() updateSessaoDto: UpdateSessaoDto) {
+    return this.sessaoService.update(id, updateSessaoDto);
   }
 
   @Delete(':id')
@@ -52,7 +54,7 @@ export class SessaoController {
   @ApiOperation({ summary: 'Remove uma sessão pelo ID' })
   @ApiResponse({ status: 200, description: 'Sessão removida com sucesso.' })
   @ApiResponse({ status: 404, description: 'Sessão não encontrada.' })
-  remove(@Param('id') id: string) {
-    return this.sessaoService.remove(+id);
+  remove(@Param('id', ParseIntPipe) id: number) {
+    return this.sessaoService.remove(id);
   }
 }

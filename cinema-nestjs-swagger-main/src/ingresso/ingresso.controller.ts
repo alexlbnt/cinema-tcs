@@ -1,8 +1,9 @@
-import { Controller, Get, Post, Body, Param } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, ParseIntPipe } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { IngressoService } from './ingresso.service';
 import { CreateIngressoDto } from './dto/create-ingresso.dto';
 import { Public } from '../auth/public.decorator';
+import { Roles, ADMIN } from '../auth/roles.decorator';
 
 @ApiTags('Ingressos')
 @ApiBearerAuth()
@@ -20,17 +21,19 @@ export class IngressoController {
   }
 
   @Get()
-  @ApiOperation({ summary: 'Lista todos os ingressos (requer JWT)' })
+  @Roles(ADMIN)
+  @ApiOperation({ summary: 'Lista todos os ingressos (somente ADMIN)' })
   @ApiResponse({ status: 200, description: 'Lista de ingressos retornada com sucesso.' })
   findAll() {
     return this.ingressoService.findAll();
   }
 
   @Get(':id')
-  @ApiOperation({ summary: 'Busca um ingresso por ID (requer JWT)' })
+  @Roles(ADMIN)
+  @ApiOperation({ summary: 'Busca um ingresso por ID (somente ADMIN)' })
   @ApiResponse({ status: 200, description: 'Ingresso encontrado com sucesso.' })
   @ApiResponse({ status: 404, description: 'Ingresso não encontrado.' })
-  findOne(@Param('id') id: string) {
-    return this.ingressoService.findOne(+id);
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.ingressoService.findOne(id);
   }
 }

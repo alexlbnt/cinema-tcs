@@ -13,75 +13,59 @@ export class UsersService {
     id: true,
     nome: true,
     email: true,
+    role: true,
     criadoEm: true,
     atualizadoEm: true,
   };
 
-  async create(createUserDto: CreateUserDto) {
-    const nome = createUserDto.nome || createUserDto.name;
-    const email = createUserDto.email;
-    const senha = createUserDto.senha || createUserDto.password;
-
-    if (!nome) {
-      throw new BadRequestException('O campo nome é obrigatório');
-    }
-    if (!senha) {
-      throw new BadRequestException('O campo senha é obrigatório');
-    }
-
-    const exists = await this.prisma.usuario.findUnique({ where: { email } });
+  async create(dto: CreateUserDto) {
+    const exists = await this.prisma.usuario.findUnique({ where: { email: dto.email } });
     if (exists) throw new ConflictException('E-mail já cadastrado');
 
-    const hashedPassword = await bcrypt.hash(senha, 10);
     return this.prisma.usuario.create({
       data: {
-        nome,
-        email,
-        senha: hashedPassword,
+        nome: dto.nome,
+        email: dto.email,
+        senha: await bcrypt.hash(dto.senha, 10),
+        role: dto.role ?? 'CLIENTE',
       },
       select: this.userSafeSelect,
     });
   }
 
   findAll() {
-    return this.prisma.usuario.findMany({
-      select: this.userSafeSelect,
-    });
+    return this.prisma.usuario.findMany({ select: this.userSafeSelect, orderBy: { id: 'asc' } });
   }
 
   async findOne(id: number) {
-    const user = await this.prisma.usuario.findUnique({
-      where: { id },
-      select: this.userSafeSelect,
-    });
+    const user = await this.prisma.usuario.findUnique({ where: { id }, select: this.userSafeSelect });
     if (!user) throw new NotFoundException('Usuário não encontrado');
     return user;
   }
 
-  async update(id: number, updateUserDto: UpdateUserDto) {
+  async update(id: number, dto: UpdateUserDto, requesterId: number) {
     const user = await this.prisma.usuario.findUnique({ where: { id } });
     if (!user) throw new NotFoundException('Usuário não encontrado');
 
-    const data: any = {};
-    if (updateUserDto.nome || updateUserDto.name) {
-      data.nome = updateUserDto.nome || updateUserDto.name;
+    if (dto.email && dto.email !== user.email) {
+      const taken = await this.prisma.usuario.findUnique({ where: { email: dto.email } });
+      if (taken) throw new ConflictException('E-mail já cadastrado');
     }
-    if (updateUserDto.email) {
-      data.email = updateUserDto.email;
-    }
-    const senha = updateUserDto.senha || updateUserDto.password;
-    if (senha) {
-      data.senha = await bcrypt.hash(senha, 10);
+    if (dto.role && dto.role !== user.role && id === requesterId) {
+      throw new BadRequestException('Você não pode alterar o seu próprio papel');
     }
 
-    return this.prisma.usuario.update({
-      where: { id },
-      data,
-      select: this.userSafeSelect,
-    });
+    const data: Record<string, any> = {};
+    if (dto.nome) data.nome = dto.nome;
+    if (dto.email) data.email = dto.email;
+    if (dto.role) data.role = dto.role;
+    if (dto.senha) data.senha = await bcrypt.hash(dto.senha, 10);
+
+    return this.prisma.usuario.update({ where: { id }, data, select: this.userSafeSelect });
   }
 
-  async remove(id: number) {
+  async remove(id: number, requesterId: number) {
+    if (id === requesterId) throw new BadRequestException('Você não pode remover o seu próprio usuário');
     const user = await this.prisma.usuario.findUnique({ where: { id } });
     if (!user) throw new NotFoundException('Usuário não encontrado');
     await this.prisma.usuario.delete({ where: { id } });

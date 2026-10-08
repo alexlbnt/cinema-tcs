@@ -21,6 +21,7 @@ function LoginScreen({ onLogin }) {
     setLoading(true)
     try {
       const data = await loginAdmin(email, senha)
+      if (data.user?.role !== 'ADMIN') throw new Error('Acesso restrito a administradores')
       onLogin(data.access_token, data.user)
     } catch (err) {
       setError(err.message || 'Email ou senha incorretos')

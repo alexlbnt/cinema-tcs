@@ -1,8 +1,9 @@
-import { Controller, Get, Post, Body, Param } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, ParseIntPipe } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { PedidoService } from './pedido.service';
 import { CreatePedidoDto } from './dto/create-pedido.dto';
 import { Public } from '../auth/public.decorator';
+import { Roles, ADMIN } from '../auth/roles.decorator';
 
 @ApiTags('Pedidos')
 @ApiBearerAuth()
@@ -20,17 +21,19 @@ export class PedidoController {
   }
 
   @Get()
-  @ApiOperation({ summary: 'Lista todos os pedidos (requer JWT)' })
+  @Roles(ADMIN)
+  @ApiOperation({ summary: 'Lista todos os pedidos (somente ADMIN)' })
   @ApiResponse({ status: 200, description: 'Lista de pedidos retornada com sucesso.' })
   findAll() {
     return this.pedidoService.findAll();
   }
 
   @Get(':id')
-  @ApiOperation({ summary: 'Busca um pedido por ID (requer JWT)' })
+  @Roles(ADMIN)
+  @ApiOperation({ summary: 'Busca um pedido por ID (somente ADMIN)' })
   @ApiResponse({ status: 200, description: 'Pedido encontrado com sucesso.' })
   @ApiResponse({ status: 404, description: 'Pedido não encontrado.' })
-  findOne(@Param('id') id: string) {
-    return this.pedidoService.findOne(+id);
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.pedidoService.findOne(id);
   }
 }

@@ -26,10 +26,10 @@ export class AuthService {
       data: { nome, email, senha: hash },
     });
 
-    const payload = { sub: user.id, email: user.email };
+    const payload = { sub: user.id, email: user.email, role: user.role };
     return {
       access_token: this.jwtService.sign(payload),
-      user: { id: user.id, nome: user.nome, email: user.email },
+      user: { id: user.id, nome: user.nome, email: user.email, role: user.role },
     };
   }
 
@@ -41,10 +41,10 @@ export class AuthService {
     const valid = await bcrypt.compare(senha, user.senha);
     if (!valid) throw new UnauthorizedException('Credenciais inválidas');
 
-    const payload = { sub: user.id, email: user.email };
+    const payload = { sub: user.id, email: user.email, role: user.role };
     return {
       access_token: this.jwtService.sign(payload),
-      user: { id: user.id, nome: user.nome, email: user.email },
+      user: { id: user.id, nome: user.nome, email: user.email, role: user.role },
     };
   }
 
@@ -68,6 +68,6 @@ export class AuthService {
   async getMe(userId: number) {
     const user = await this.prisma.usuario.findUnique({ where: { id: userId } });
     if (!user) throw new NotFoundException('Usuário não encontrado');
-    return { id: user.id, nome: user.nome, email: user.email };
+    return { id: user.id, nome: user.nome, email: user.email, role: user.role };
   }
 }

@@ -1,11 +1,13 @@
-import { Controller, Get, Post, Patch, Delete, Body, Param } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Delete, Body, Param, ParseIntPipe } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { SnackService } from './snack.service';
 import { CreateSnackDto } from './dto/create-snack.dto';
 import { UpdateSnackDto } from './dto/update-snack.dto';
 import { Public } from '../auth/public.decorator';
+import { Roles, ADMIN } from '../auth/roles.decorator';
 
 @ApiTags('Snacks')
+@Roles(ADMIN)
 @Controller('snack')
 export class SnackController {
   constructor(private readonly snackService: SnackService) {}
@@ -32,8 +34,8 @@ export class SnackController {
   @ApiOperation({ summary: 'Busca um snack por ID' })
   @ApiResponse({ status: 200, description: 'Snack encontrado com sucesso.' })
   @ApiResponse({ status: 404, description: 'Snack não encontrado.' })
-  findOne(@Param('id') id: string) {
-    return this.snackService.findOne(+id);
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.snackService.findOne(id);
   }
 
   @Patch(':id')
@@ -42,8 +44,8 @@ export class SnackController {
   @ApiResponse({ status: 200, description: 'Snack atualizado com sucesso.' })
   @ApiResponse({ status: 400, description: 'Dados inválidos.' })
   @ApiResponse({ status: 404, description: 'Snack não encontrado.' })
-  update(@Param('id') id: string, @Body() updateSnackDto: UpdateSnackDto) {
-    return this.snackService.update(+id, updateSnackDto);
+  update(@Param('id', ParseIntPipe) id: number, @Body() updateSnackDto: UpdateSnackDto) {
+    return this.snackService.update(id, updateSnackDto);
   }
 
   @Delete(':id')
@@ -51,7 +53,7 @@ export class SnackController {
   @ApiOperation({ summary: 'Remove um snack pelo ID' })
   @ApiResponse({ status: 200, description: 'Snack removido com sucesso.' })
   @ApiResponse({ status: 404, description: 'Snack não encontrado.' })
-  remove(@Param('id') id: string) {
-    return this.snackService.remove(+id);
+  remove(@Param('id', ParseIntPipe) id: number) {
+    return this.snackService.remove(id);
   }
 }

@@ -1,11 +1,13 @@
-import { Controller, Get, Post, Patch, Delete, Body, Param } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Delete, Body, Param, ParseIntPipe } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { FilmeService } from './filme.service';
 import { CreateFilmeDto } from './dto/create-filme.dto';
 import { UpdateFilmeDto } from './dto/update-filme.dto';
 import { Public } from '../auth/public.decorator';
+import { Roles, ADMIN } from '../auth/roles.decorator';
 
 @ApiTags('Filmes')
+@Roles(ADMIN)
 @Controller('filme')
 export class FilmeController {
   constructor(private readonly filmeService: FilmeService) {}
@@ -32,8 +34,8 @@ export class FilmeController {
   @ApiOperation({ summary: 'Busca as informações detalhadas de um filme' })
   @ApiResponse({ status: 200, description: 'Filme encontrado com sucesso.' })
   @ApiResponse({ status: 404, description: 'Filme não encontrado.' })
-  findOne(@Param('id') id: string) {
-    return this.filmeService.findOne(+id);
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.filmeService.findOne(id);
   }
 
   @Patch(':id')
@@ -42,8 +44,8 @@ export class FilmeController {
   @ApiResponse({ status: 200, description: 'Filme atualizado com sucesso.' })
   @ApiResponse({ status: 400, description: 'Dados inválidos.' })
   @ApiResponse({ status: 404, description: 'Filme não encontrado.' })
-  update(@Param('id') id: string, @Body() updateFilmeDto: UpdateFilmeDto) {
-    return this.filmeService.update(+id, updateFilmeDto);
+  update(@Param('id', ParseIntPipe) id: number, @Body() updateFilmeDto: UpdateFilmeDto) {
+    return this.filmeService.update(id, updateFilmeDto);
   }
 
   @Delete(':id')
@@ -51,7 +53,7 @@ export class FilmeController {
   @ApiOperation({ summary: 'Remove um filme pelo ID' })
   @ApiResponse({ status: 200, description: 'Filme removido com sucesso.' })
   @ApiResponse({ status: 404, description: 'Filme não encontrado.' })
-  remove(@Param('id') id: string) {
-    return this.filmeService.remove(+id);
+  remove(@Param('id', ParseIntPipe) id: number) {
+    return this.filmeService.remove(id);
   }
 }
