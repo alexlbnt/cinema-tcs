@@ -1,5 +1,32 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsArray, IsInt, IsNumber, IsOptional, Min } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsArray, IsIn, IsInt, IsNumber, IsOptional, IsString, Min, ValidateNested } from 'class-validator';
+
+export class PedidoIngressoDto {
+  @ApiProperty({ example: 'Inteira', enum: ['Inteira', 'Meia'] })
+  @IsIn(['Inteira', 'Meia'])
+  tipo: string;
+
+  @ApiProperty({ example: 25 })
+  @IsNumber()
+  @Min(0)
+  valorPago: number;
+
+  @ApiProperty({ example: 'B4' })
+  @IsString()
+  assento: string;
+}
+
+export class PedidoSnackDto {
+  @ApiProperty({ example: 1 })
+  @IsInt()
+  snackId: number;
+
+  @ApiProperty({ example: 2 })
+  @IsInt()
+  @Min(1)
+  quantidade: number;
+}
 
 export class CreatePedidoDto {
   @ApiPropertyOptional({ example: [1, 2], description: 'IDs dos ingressos já cadastrados' })
@@ -29,13 +56,17 @@ export class CreatePedidoDto {
   @IsInt()
   sessaoId?: number;
 
-  @ApiPropertyOptional({ description: 'Ingressos para criação inline' })
+  @ApiPropertyOptional({ type: [PedidoIngressoDto], description: 'Ingressos para criação inline (requer sessaoId)' })
   @IsOptional()
   @IsArray()
-  ingressos?: Array<{ tipo: string; valorPago: number; assento: string }>;
+  @ValidateNested({ each: true })
+  @Type(() => PedidoIngressoDto)
+  ingressos?: PedidoIngressoDto[];
 
-  @ApiPropertyOptional({ description: 'Snacks para criação inline com quantidade' })
+  @ApiPropertyOptional({ type: [PedidoSnackDto], description: 'Snacks para criação inline com quantidade' })
   @IsOptional()
   @IsArray()
-  snacks?: Array<{ snackId: number; quantidade: number }>;
+  @ValidateNested({ each: true })
+  @Type(() => PedidoSnackDto)
+  snacks?: PedidoSnackDto[];
 }

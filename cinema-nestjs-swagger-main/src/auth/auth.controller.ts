@@ -1,4 +1,4 @@
-import { Controller, Post, Get, Body, Request } from '@nestjs/common';
+import { Controller, Post, Get, Body, Request, HttpCode } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags, ApiBody } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { Public } from './public.decorator';
@@ -21,6 +21,7 @@ export class AuthController {
   }
 
   @Post('login')
+  @HttpCode(200)
   @Public()
   @ApiOperation({ summary: 'Login e obter JWT (público)' })
   @ApiResponse({ status: 200, description: 'Login efetuado com sucesso.' })
@@ -31,6 +32,7 @@ export class AuthController {
   }
 
   @Post('forgot-password')
+  @HttpCode(200)
   @Public()
   @ApiOperation({ summary: 'Recuperar senha (público)' })
   @ApiResponse({ status: 200, description: 'Instrução de recuperação processada.' })

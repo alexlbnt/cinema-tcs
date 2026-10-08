@@ -6,7 +6,6 @@ import { Public } from '../auth/public.decorator';
 import { Roles, ADMIN } from '../auth/roles.decorator';
 
 @ApiTags('Ingressos')
-@ApiBearerAuth()
 @Controller('ingresso')
 export class IngressoController {
   constructor(private readonly ingressoService: IngressoService) {}
@@ -22,6 +21,7 @@ export class IngressoController {
 
   @Get()
   @Roles(ADMIN)
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Lista todos os ingressos (somente ADMIN)' })
   @ApiResponse({ status: 200, description: 'Lista de ingressos retornada com sucesso.' })
   findAll() {
@@ -30,6 +30,7 @@ export class IngressoController {
 
   @Get(':id')
   @Roles(ADMIN)
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Busca um ingresso por ID (somente ADMIN)' })
   @ApiResponse({ status: 200, description: 'Ingresso encontrado com sucesso.' })
   @ApiResponse({ status: 404, description: 'Ingresso não encontrado.' })

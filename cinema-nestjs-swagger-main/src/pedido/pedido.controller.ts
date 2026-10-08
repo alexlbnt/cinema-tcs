@@ -6,7 +6,6 @@ import { Public } from '../auth/public.decorator';
 import { Roles, ADMIN } from '../auth/roles.decorator';
 
 @ApiTags('Pedidos')
-@ApiBearerAuth()
 @Controller('pedido')
 export class PedidoController {
   constructor(private readonly pedidoService: PedidoService) {}
@@ -22,6 +21,7 @@ export class PedidoController {
 
   @Get()
   @Roles(ADMIN)
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Lista todos os pedidos (somente ADMIN)' })
   @ApiResponse({ status: 200, description: 'Lista de pedidos retornada com sucesso.' })
   findAll() {
@@ -30,6 +30,7 @@ export class PedidoController {
 
   @Get(':id')
   @Roles(ADMIN)
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Busca um pedido por ID (somente ADMIN)' })
   @ApiResponse({ status: 200, description: 'Pedido encontrado com sucesso.' })
   @ApiResponse({ status: 404, description: 'Pedido não encontrado.' })
